@@ -2,13 +2,50 @@ import pygame as pg
 
 
 class Sprite():
-    def __init__(self, dct):
-        self.imageat = dct["imageat"] if "imageat" in dct else None
-        self.instances = []
-    
+    def __init__(self, dct:dict):
+        self.id = dct["id"] if "id" in dct else None #object id
+        self.imageat = dct["imageat"] if "imageat" in dct else None #position of image on sprite sheet
+        self.box = dct["box"] if "box" in dct else print("no box defined") #box for physics interactions
+        self.collisions = dct["collision"] if "collision" in dct else False #sets wether the objects has interactions
+        self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
+        self.friction = dct["friction"] if "friction" in dct else 0.0
+
+        self.instances = [] #all instances of this exact object
+        self.pos = [0.0,0.0]
+
+    def collision(self, instance:list):
+        print("collision: ", instance)
+
+    def detectCollision(self, objects:list):
+        for x in objects:
+            if self.collisions:
+                colval = list(map(lambda x,y: (x+y)/2, x.box, self.box))
+                for instance in self.instances:
+                    cen = list(map(lambda x: x*32, instance))
+                    dist = list(map(lambda x, y: abs(x-y), cen, x.pos))
+                    if dist[0] < colval[0] and dist[1]<colval[1]:
+                        if dist[0]/colval[0] > dist[1]/colval[1]: 
+                            print("x collision")
+                            if cen[0]>x.pos[0]:
+                                #right collision
+                                x.collision("r", self, instance)
+                            else:
+                                #left collision
+                                x.collision("l", self, instance)
+                            self.collision(instance)
+                        else:
+                            print("y collision")
+                            if cen[1]>x.pos[1]:
+                                #top collision
+                                x.collision("t", self, instance)
+                            else:
+                                #bottom collision
+                                x.collision("b", self, instance)
+                            self.collision(instance)
+
     def render(self, screen, ss):
         for instance in self.instances:
-            screen.blit(ss.image_at(self.imageat), (instance[0]*32 , screen.get_height() -(instance[1]+1)*32  ))
+            screen.blit(ss.image_at(self.imageat), tuple(map(lambda x, y: x - y/2,[instance[0]*self.box[0] , screen.get_height() -(instance[1])*self.box[1]], self.box)))
 
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
@@ -24,16 +61,34 @@ class Player(Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_d]:
             print("right")
-            self.vel[0] = min(self.vel[0] + self.acc*1/60, self.maxspeed)
+            self.vel[0] = min(self.vel[0] + self.acc*1/60.0, self.maxspeed)
         if keys[pg.K_a]:
             print("left")
-            self.vel[0] = max(self.vel[0] - self.acc*1/60, -self.maxspeed)
+            self.vel[0] = max(self.vel[0] - self.acc*1/60.0, -self.maxspeed)
         if keys[pg.K_w]:
             print("up")
         if keys[pg.K_s]:
             print("down")
         if keys[pg.K_SPACE]:
             print("space")
+
+    def jump(self):
+        self.vel[1] += 10
+
+    def collision(self, side:str, colobject:Sprite, instance:list):
+        print("player collision", side)
+        if side == "l":
+            print("left")
+        elif side == "r":
+            print("right")
+        elif side == "t":
+            print("top")
+        elif side == "b":
+            print("bottom")
+            self.vel[1] = 0.0
+            if self.vel[0] != 0.0 : self.vel[0] *= (abs(self.vel[0])-colobject.friction * 1/60.0)/abs(self.vel[0])
+            self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
+        
         
     def update(self, dt:float, physics:dict):
         print("updateS")

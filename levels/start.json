@@ -2,12 +2,13 @@
     "sprite sheet":"assets\\platforms.png",
     "assetsDir": "assets\\",
     "physics":{
-        "gravity":5.0
+        "gravity":10.0
     },
     "player":{
         "start":[0.0,0.0],
         "animation": false,
         "image": "player1.png",
+        "box": [32,32],
         "collision": true,
         "maxspeed": 60.0,
         "acceleration": 30
@@ -17,6 +18,7 @@
             "id":"pl1",
             "imageat": [0,0,32,32],
             "collision":true,
+            "solid":true,
             "box": [32,32],
             "friction": 3.0
         },
@@ -24,6 +26,7 @@
             "id":"pl2",
             "imageat":[32,0,32,32],
             "collision":true,
+            "solid":true,
             "box": [32,32],
             "friction": 6.0
         }

@@ -21,6 +21,8 @@ class Game():
                 print(event.key)
                 if event.key == 27:
                     self.running = False
+                if event.key == pg.K_SPACE:
+                    self.player.jump()
     
     def setLevelList(self, levels:list() = None):
         try:
@@ -90,6 +92,10 @@ class Game():
             #handle all necesarry events
             self.eventHandler()
             self.player.inputHandler()
+
+            #collision detection
+            for x in self.objects:
+                x.detectCollision([self.player])
 
 
             #update player and object states
