@@ -1,0 +1,36 @@
+{
+    "sprite sheet":"assets\\platforms.png",
+    "assetsDir": "assets\\",
+    "physics":{
+        "gravity":5.0
+    },
+    "player":{
+        "start":[0.0,0.0],
+        "animation": false,
+        "image": "player1.png",
+        "collision": true,
+        "maxspeed": 60.0,
+        "acceleration": 30
+    },
+    "objects":[
+        {
+            "id":"pl1",
+            "imageat": [0,0,32,32],
+            "collision":true,
+            "box": [32,32],
+            "friction": 3.0
+        },
+        {
+            "id":"pl2",
+            "imageat":[32,0,32,32],
+            "collision":true,
+            "box": [32,32],
+            "friction": 6.0
+        }
+    ],
+    "map":[
+        [0,0,0,1,0,1,2,1,1,1,2,2,0,0,0,0,0,0,0,0],
+        [1,2,1,2,1,2,1,2,1,2,1,2,1,1,2,1,1,1,1,1]
+    ]
+
+}
