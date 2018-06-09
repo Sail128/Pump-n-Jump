@@ -34,7 +34,7 @@ class Sprite():
                                 x.collision("l", self, instance)
                             self.collision(instance)
                         else:
-                            print("y collision")
+                            #print("y collision")
                             if cen[1]>x.pos[1]:
                                 #top collision
                                 x.collision("t", self, instance)
@@ -56,6 +56,8 @@ class Player(Sprite):
         self.size = [32,32]
         self.pos = [100,100]
         self.vel = [0.0,0.0]
+        self.jumpstrength = 0.0
+        self.jumps = 0
     
     def inputHandler(self):
         keys = pg.key.get_pressed()
@@ -71,23 +73,31 @@ class Player(Sprite):
             print("down")
         if keys[pg.K_SPACE]:
             print("space")
+            self.jumpstrength += 2.0
 
     def jump(self):
-        self.vel[1] += 10
+        if self.jumps < 2: 
+            self.vel[1] += self.jumpstrength
+            print(self.jumpstrength)
+            self.jumpstrength *= 0.5
+            self.jumps +=1
 
     def collision(self, side:str, colobject:Sprite, instance:list):
         print("player collision", side)
         if side == "l":
             print("left")
+            if self.vel[0] < 0.0: self.vel[0] = 0.0
         elif side == "r":
             print("right")
+            if self.vel[0] > 0.0: self.vel[0] = 0.0
         elif side == "t":
             print("top")
         elif side == "b":
-            print("bottom")
-            self.vel[1] = 0.0
+            #print("bottom")
+            if self.vel[1]<0.0 : self.vel[1] = 0.0
             if self.vel[0] != 0.0 : self.vel[0] *= (abs(self.vel[0])-colobject.friction * 1/60.0)/abs(self.vel[0])
             self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
+            self.jumps = 0
         
         
     def update(self, dt:float, physics:dict):
