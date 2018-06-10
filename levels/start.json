@@ -2,16 +2,17 @@
     "sprite sheet":"assets\\platforms.png",
     "assetsDir": "assets\\",
     "physics":{
-        "gravity":100
+        "gravity":200
     },
     "player":{
-        "start":[0.0,0.0],
+        "start":[100.0, 100.0],
         "animation": false,
         "image": "player1.png",
-        "box": [32,32],
+        "box": [30,32],
         "collision": true,
         "solid": true,
         "maxspeed": 130.0,
+        "maxjump": 300.0,
         "acceleration": 600
     },
     "objects":[
@@ -21,7 +22,7 @@
             "collision":true,
             "solid":true,
             "box": [32,32],
-            "friction": 8.0
+            "friction": 200.0
         },
         {
             "id":"pl2",
@@ -29,11 +30,19 @@
             "collision":true,
             "solid":true,
             "box": [32,32],
-            "friction": 16.0
+            "friction": 230.0
+        },
+        {
+            "id":"load flag",
+            "imageat":[32,0,32,32],
+            "collision":true,
+            "oncollision": {"loadlevel": "level1.json"},
+            "solid":false,
+            "box": [32,32]
         }
     ],
     "map":[
-        [0,0,0,1,0,1,2,1,1,1,2,2,0,0,0,0,0,0,0,0],
+        [0,0,0,1,0,1,2,1,1,1,2,2,0,0,0,0,0,0,0,3],
         [1,2,1,2,1,2,1,2,1,2,1,2,1,1,2,1,1,1,1,1]
     ]
 

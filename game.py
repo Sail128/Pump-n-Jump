@@ -50,7 +50,7 @@ class Game():
         self.physics = levelDict["physics"]
 
         self.player = objs.Player(levelDict["player"], levelDict["assetsDir"])
-
+        self.objects = []
         for x in levelDict["objects"]:
             self.objects.append(objs.Sprite(x)) 
 
@@ -95,7 +95,7 @@ class Game():
 
             #collision detection
             for x in self.objects:
-                x.detectCollision([self.player])
+                x.detectCollision([self.player], self)
 
 
             #update player and object states

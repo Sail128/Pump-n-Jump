@@ -7,8 +7,9 @@ class Sprite():
         self.imageat = dct["imageat"] if "imageat" in dct else None #position of image on sprite sheet
         self.box = dct["box"] if "box" in dct else print("no box defined") #box for physics interactions
         self.collisions = dct["collision"] if "collision" in dct else False #sets wether the objects has interactions
+        self.oncollision = dct["oncollision"]  if "oncollision" in dct else dict()
         self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
-        self.friction = dct["friction"] if "friction" in dct else 0.0
+        self.friction = dct["friction"] if "friction" in dct else 0.0 #friction an object exerts on a player, 
 
         self.instances = [] #all instances of this exact object
         self.pos = [0.0,0.0]
@@ -16,7 +17,7 @@ class Sprite():
     def collision(self, instance:list):
         print("collision: ", instance)
 
-    def detectCollision(self, objects:list):
+    def detectCollision(self, objects:list, game):
         for x in objects:
             if self.collisions:
                 colval = list(map(lambda x,y: (x+y)/2, x.box, self.box))
@@ -24,15 +25,16 @@ class Sprite():
                     cen = list(map(lambda x: x*32, instance))
                     dist = list(map(lambda x, y: abs(x-y), cen, x.pos))
                     if dist[0] < colval[0] and dist[1]<colval[1]:
+                        if "loadlevel" in self.oncollision: game.loadLevel(game.levelList.index(self.oncollision["loadlevel"]))
                         if dist[0]/colval[0] > dist[1]/colval[1]: 
-                            print("x collision")
+                            #print("x collision")
                             if cen[0]>x.pos[0]:
                                 #right collision
                                 x.collision("r", self, instance)
                             else:
                                 #left collision
                                 x.collision("l", self, instance)
-                            self.collision(instance)
+                            #self.collision(instance)
                         else:
                             #print("y collision")
                             if cen[1]>x.pos[1]:
@@ -41,7 +43,7 @@ class Sprite():
                             else:
                                 #bottom collision
                                 x.collision("b", self, instance)
-                            self.collision(instance)
+                            #self.collision(instance)
 
     def render(self, screen, ss):
         for instance in self.instances:
@@ -50,11 +52,11 @@ class Sprite():
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
         super().__init__(dct)
-        self.image = pg.image.load(assetdir + dct["image"]).convert()
+        self.image = pg.image.load(assetdir + dct["image"]).convert_alpha()
         self.maxspeed = dct["maxspeed"]
+        self.maxjump = dct["maxjump"]
         self.acc = dct["acceleration"]
-        self.size = [32,32]
-        self.pos = [100,100]
+        self.pos = dct["start"]
         self.vel = [0.0,0.0]
         self.jumpstrength = 0.0
         self.jumps = 0
@@ -73,13 +75,13 @@ class Player(Sprite):
             print("down")
         if keys[pg.K_SPACE]:
             print("space")
-            self.jumpstrength += 2.0
+            self.jumpstrength = min(self.maxjump , self.jumpstrength + 8.0)
 
     def jump(self):
         if self.jumps < 2: 
             self.vel[1] += self.jumpstrength
             print(self.jumpstrength)
-            self.jumpstrength *= 0.5
+            self.jumpstrength *= 0.4
             self.jumps +=1
 
     def collision(self, side:str, colobject:Sprite, instance:list):
@@ -93,26 +95,25 @@ class Player(Sprite):
         elif side == "t":
             print("top")
         elif side == "b":
-            #print("bottom")
             if self.vel[1]<0.0 : self.vel[1] = 0.0
-            if self.vel[0] != 0.0 : self.vel[0] *= (abs(self.vel[0])-colobject.friction * 1/60.0)/abs(self.vel[0])
+            if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-colobject.friction * 1/60.0))/abs(self.vel[0])
+            else: self.vel[0] = 0.0
             self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
             self.jumps = 0
         
         
     def update(self, dt:float, physics:dict):
-        print("updateS")
         self.vel[1] -= physics["gravity"]*dt
         self.pos[0] += self.vel[0]*dt
         self.pos[1] += self.vel[1]*dt
 
     def render(self, screen):
-        screen.blit(self.image, (int(self.pos[0]-self.size[0]/2), int(screen.get_height() - self.pos[1]-self.size[1]/2)))
+        screen.blit(self.image, (int(self.pos[0]-self.box[0]/2), int(screen.get_height() - self.pos[1]-self.box[1]/2)))
 
 class spritesheet(object):
     def __init__(self, filename):
         try:
-            self.sheet = pg.image.load(filename).convert()
+            self.sheet = pg.image.load(filename).convert_alpha()
         except pg.error:
             print ('Unable to load spritesheet image:', filename)
             raise (SystemExit)
