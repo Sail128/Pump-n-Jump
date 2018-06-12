@@ -92,9 +92,9 @@ class Game():
         pg.time.wait(10)
         while self.running:
             #handle frame counting limiting and dt
-            #now = pg.time.get_ticks()
-            #wait = int(24- (now-oldtime))
-            #pg.time.wait(wait)
+            now = pg.time.get_ticks()
+            wait = max(0, 10 - (now-oldtime))
+            pg.time.wait(wait)
             now = pg.time.get_ticks()
             dt = (now-oldtime)/1000
             oldtime = now

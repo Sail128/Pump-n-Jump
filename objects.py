@@ -11,7 +11,7 @@ class Sprite():
         self.oncollision = dct["oncollision"]  if "oncollision" in dct else dict()
         self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
         self.friction = dct["friction"] if "friction" in dct else 0.0 #friction an object exerts on a player, 
-        self.non = False
+        self.non = 0
 
         self.instances = [] #all instances of this exact object
         self.pos = [0.0,0.0]
@@ -58,7 +58,12 @@ class Sprite():
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
         super().__init__(dct)
-        self.image = pg.image.load(assetdir + dct["image"]).convert_alpha()
+        animdct = dct["animation"] if "animation" in dct else False
+        if animdct["use"]:
+            self.animations = dict()
+            self.setup_animations(animdct["animations"], assetdir)
+        else: 
+            self.image = pg.image.load(assetdir + dct["image"]).convert_alpha()
         self.maxspeed = dct["maxspeed"]
         self.maxjump = dct["maxjump"]
         self.acc = dct["acceleration"]
@@ -66,9 +71,24 @@ class Player(Sprite):
         self.vel = [0.0,0.0]
         self.jumpstrength = 0.0
         self.jumps = 0
-        self.move = []
+        self.move = list()
         self.pressed = False
-    
+
+    def setup_animations(self, dct, assetdir):
+        print(dct)
+        for key, val in dct.items():
+            print(key, val)
+            self.animations[key] = [
+                SpriteStripAnim(assetdir+val["file"],
+                    val["rect"],
+                    val["frames"],
+                    loop = val["loop"] if "loop" in val else True),
+                0.0, #time since last frame update
+                1.0/(val["frames"]) #time for every frame update
+                ]
+        
+        self.image = self.animations["s"][0].next()
+
     def inputHandler(self):
         self.move = []
         keys = pg.key.get_pressed()
@@ -85,7 +105,7 @@ class Player(Sprite):
         if keys[pg.K_SPACE]:
             #print("space")
             self.pressed = True
-            self.jumpstrength = min(self.maxjump , self.jumpstrength + 2.0)
+            self.jumpstrength = min(self.maxjump , self.jumpstrength + 10.0)
         if not keys[pg.K_SPACE] and self.pressed:
             self.pressed = False
             self.move.append({"j":1})
@@ -122,13 +142,33 @@ class Player(Sprite):
         for x in self.move:
             if "r" in x:
                 self.vel[0] = min(self.vel[0] + self.acc*dt, self.maxspeed)
+
+                if self.animations["r"][1] > self.animations["r"][2]:
+                    self.image = self.animations["r"][0].next()
+                    self.animations["r"][1] == 0.0
+                    
+                else: 
+                    self.animations["r"][1] += dt
+
             elif "l" in x:
                 self.vel[0] = max(self.vel[0] - self.acc*dt, -self.maxspeed)
+
+                if self.animations["l"][1] > self.animations["l"][2]:
+                    self.image = self.animations["l"][0].next()
+                    self.animations["l"][1] == 0.0
+                else: 
+                    self.animations["l"][1] += dt
+
             elif "f" in x:
-                if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-x["f"] * dt))/abs(self.vel[0])
+                if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-max(1, abs(self.vel[0])/40)*x["f"] * dt))/abs(self.vel[0])
                 else: self.vel[0] = 0.0
+                #self.image = self.animations["s"][0].next()
             elif "j" in x:
                 self.jump()
+        #update dynamic animations    
+        if -0.1 <self.vel[0]< 0.1 and self.jumps == 0:
+            self.image = self.animations["s"][0].next()
+        
 
     def render(self, screen, camerapos):
         screen.blit(self.image, (int(self.pos[0]-self.box[0]/2- camerapos[0]), int(screen.get_height() -(self.pos[1]-camerapos[1])-self.box[1]/2)))
@@ -144,12 +184,14 @@ class spritesheet(object):
     def image_at(self, rectangle, colorkey = None):
         "Loads image from x,y,x+offset,y+offset"
         rect = pg.Rect(rectangle)
-        image = pg.Surface(rect.size).convert()
-        image.blit(self.sheet, (0, 0), rect)
+        image = pg.Surface(rect.size).convert_alpha()
+        image.fill((0,0,0,0))
+        image.blit(self.sheet, (0, 0), rect , pg.BLEND_RGBA_ADD)
         if colorkey is not None:
             if colorkey is -1:
                 colorkey = image.get_at((0,0))
             image.set_colorkey(colorkey, pg.RLEACCEL)
+        #print(image.get_at((0,0)))
         return image
     # Load a whole bunch of images and return them as a list
     def images_at(self, rects, colorkey = None):
@@ -158,6 +200,7 @@ class spritesheet(object):
     # Load a whole strip of images
     def load_strip(self, rect, image_count, colorkey = None):
         "Loads a strip of images and returns them as a list"
+        
         tups = [(rect[0]+rect[2]*x, rect[1], rect[2], rect[3])
                 for x in range(image_count)]
         return self.images_at(tups, colorkey)
@@ -189,6 +232,7 @@ class SpriteStripAnim(object):
         self.frames = frames
         self.f = frames
     def iter(self):
+        #resets the loop
         self.i = 0
         self.f = self.frames
         return self

@@ -4,16 +4,38 @@
     "physics":{
         "gravity":200
     },
-    "player":{
-        "start":[100.0, 100.0],
-        "animation": false,
+    "player": {
+        "start": [100.0, 100.0],
+        "animation": {
+            "use": true,
+            "animations": {
+                "s": {
+                    "file": "player1.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames": 1,
+                    "loop": true
+                },
+                "r": {
+                    "file":"player_right.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames":25, 
+                    "loop":true
+                },
+                "l": {
+                    "file":"player_left.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames":25, 
+                    "loop":true
+                }
+            }
+        },
         "image": "player1.png",
-        "box": [30,32],
+        "box": [30, 32],
         "collision": true,
         "solid": true,
-        "maxspeed": 130.0,
+        "maxspeed": 180.0,
         "maxjump": 300.0,
-        "acceleration": 600
+        "acceleration": 1200
     },
     "objects":[
         {
