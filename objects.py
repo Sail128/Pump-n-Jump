@@ -1,4 +1,5 @@
 import pygame as pg 
+from math import ceil
 
 
 class Sprite():
@@ -10,12 +11,15 @@ class Sprite():
         self.oncollision = dct["oncollision"]  if "oncollision" in dct else dict()
         self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
         self.friction = dct["friction"] if "friction" in dct else 0.0 #friction an object exerts on a player, 
+        self.non = False
 
         self.instances = [] #all instances of this exact object
         self.pos = [0.0,0.0]
 
     def collision(self, instance:list):
-        print("collision: ", instance)
+        #print("collision: ", instance)
+        self.non = False
+
 
     def detectCollision(self, objects:list, game):
         for x in objects:
@@ -45,9 +49,11 @@ class Sprite():
                                 x.collision("b", self, instance)
                             #self.collision(instance)
 
-    def render(self, screen, ss):
+    def render(self, screen, ss, camerapos):
         for instance in self.instances:
-            screen.blit(ss.image_at(self.imageat), tuple(map(lambda x, y: x - y/2,[instance[0]*self.box[0] , screen.get_height() -(instance[1])*self.box[1]], self.box)))
+            pos = [ instance[0]*self.box[0]-camerapos[0] , 
+                    screen.get_height() -(instance[1]*self.box[1]-camerapos[1])]
+            screen.blit(ss.image_at(self.imageat), tuple(map(lambda x, y: x - y/2, pos, self.box)))
 
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
@@ -60,44 +66,50 @@ class Player(Sprite):
         self.vel = [0.0,0.0]
         self.jumpstrength = 0.0
         self.jumps = 0
+        self.move = []
+        self.pressed = False
     
     def inputHandler(self):
+        self.move = []
         keys = pg.key.get_pressed()
         if keys[pg.K_d]:
-            print("right")
-            self.vel[0] = min(self.vel[0] + self.acc*1/60.0, self.maxspeed)
+            #print("right")
+            self.move.append({"r": 1})
         if keys[pg.K_a]:
-            print("left")
-            self.vel[0] = max(self.vel[0] - self.acc*1/60.0, -self.maxspeed)
-        if keys[pg.K_w]:
-            print("up")
-        if keys[pg.K_s]:
-            print("down")
+            #print("left")
+            self.move.append({"l":1})
+        #if keys[pg.K_w]:
+            #print("up")
+        #if keys[pg.K_s]:
+            #print("down")
         if keys[pg.K_SPACE]:
-            print("space")
-            self.jumpstrength = min(self.maxjump , self.jumpstrength + 8.0)
+            #print("space")
+            self.pressed = True
+            self.jumpstrength = min(self.maxjump , self.jumpstrength + 2.0)
+        if not keys[pg.K_SPACE] and self.pressed:
+            self.pressed = False
+            self.move.append({"j":1})
 
     def jump(self):
-        if self.jumps < 2: 
+        if self.jumps < 1: 
             self.vel[1] += self.jumpstrength
             print(self.jumpstrength)
             self.jumpstrength *= 0.4
             self.jumps +=1
 
     def collision(self, side:str, colobject:Sprite, instance:list):
-        print("player collision", side)
         if side == "l":
-            print("left")
+            #print("left")
             if self.vel[0] < 0.0: self.vel[0] = 0.0
         elif side == "r":
-            print("right")
+            #print("right")
             if self.vel[0] > 0.0: self.vel[0] = 0.0
         elif side == "t":
-            print("top")
+            #print("top")
+            self.non = False
         elif side == "b":
             if self.vel[1]<0.0 : self.vel[1] = 0.0
-            if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-colobject.friction * 1/60.0))/abs(self.vel[0])
-            else: self.vel[0] = 0.0
+            self.move.append({"f":colobject.friction})
             self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
             self.jumps = 0
         
@@ -107,8 +119,19 @@ class Player(Sprite):
         self.pos[0] += self.vel[0]*dt
         self.pos[1] += self.vel[1]*dt
 
-    def render(self, screen):
-        screen.blit(self.image, (int(self.pos[0]-self.box[0]/2), int(screen.get_height() - self.pos[1]-self.box[1]/2)))
+        for x in self.move:
+            if "r" in x:
+                self.vel[0] = min(self.vel[0] + self.acc*dt, self.maxspeed)
+            elif "l" in x:
+                self.vel[0] = max(self.vel[0] - self.acc*dt, -self.maxspeed)
+            elif "f" in x:
+                if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-x["f"] * dt))/abs(self.vel[0])
+                else: self.vel[0] = 0.0
+            elif "j" in x:
+                self.jump()
+
+    def render(self, screen, camerapos):
+        screen.blit(self.image, (int(self.pos[0]-self.box[0]/2- camerapos[0]), int(screen.get_height() -(self.pos[1]-camerapos[1])-self.box[1]/2)))
 
 class spritesheet(object):
     def __init__(self, filename):
@@ -184,3 +207,31 @@ class SpriteStripAnim(object):
     def __add__(self, ss):
         self.images.extend(ss.images)
         return self
+
+class Background():
+    def __init__(self, dct:dict, assetdir:str):
+        self.image = pg.image.load(assetdir + dct["image"]).convert_alpha()
+        print(self.image)
+        self.distance = dct["distance"] if "distance" in dct else 20
+        self.looping = dct["looping"] if "looping" in dct else False
+        self.position = dct["position"] if "position" in dct else [0,0]
+        self.size = self.image.get_size()
+    
+    def render(self, screen:pg.Surface, camerapos:list):
+        pos = [ self.position[0] - camerapos[0]/self.distance, screen.get_height() -(self.position[1]-camerapos[1]/self.distance +self.size[1])]
+        screenwidth = screen.get_width()
+        if self.looping:
+            bound = ceil((camerapos[0] + screenwidth - pos[0]) / self.size[0])
+            if bound < 0: 
+                bound -= ceil(screenwidth/self.size[0])
+                upbound = bound + ceil( (camerapos[0] + screenwidth - ( pos[0]+ bound*self.size[0] ) ) / self.size[0] )
+                for i in range(bound, upbound+1):
+                    screen.blit(self.image, (pos[0] + self.size[0]*i, pos[1]))
+            elif bound > 0:
+                #todo
+                lowbound = bound - ceil( ( pos[0] + bound*self.size[0] - camerapos[0]) / self.size[0])
+                print(lowbound, bound)
+                for i in range(lowbound, bound+1):
+                    screen.blit(self.image, (pos[0]+ self.size[0]*i, pos[1]) )
+        else:
+            screen.blit(self.image, pos)

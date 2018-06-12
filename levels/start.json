@@ -2,18 +2,22 @@
     "sprite sheet":"assets\\platforms.png",
     "assetsDir": "assets\\",
     "physics":{
-        "gravity":200
+        "gravity":300
     },
     "player":{
         "start":[100.0, 100.0],
         "animation": false,
+        "animations":{
+            "r":"player_right.png",
+            "l":"player_left.png"
+        },
         "image": "player1.png",
         "box": [30,32],
         "collision": true,
         "solid": true,
-        "maxspeed": 130.0,
+        "maxspeed": 180.0,
         "maxjump": 300.0,
-        "acceleration": 600
+        "acceleration": 1200
     },
     "objects":[
         {
@@ -41,9 +45,17 @@
             "box": [32,32]
         }
     ],
+    "backgrounds":[
+        {
+            "image":"background1.png",
+            "distance": 10,
+            "looping": false,
+            "position": [100,0]
+        }
+    ],
     "map":[
-        [0,0,0,1,0,1,2,1,1,1,2,2,0,0,0,0,0,0,0,3],
-        [1,2,1,2,1,2,1,2,1,2,1,2,1,1,2,1,1,1,1,1]
+        [0,0,0,1,0,1,2,1,1,1,2,2,0,0,0,0,0,0,0,0,0,0,0,0],
+        [1,2,1,2,1,2,1,2,1,2,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ]
 
 }
