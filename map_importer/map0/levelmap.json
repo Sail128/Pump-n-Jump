@@ -1,58 +1,14 @@
 {
-    "sprite sheet":"assets\\platforms.png",
-    "assetsDir": "assets\\",
-    "physics":{
-        "gravity":300
-    },
-    "player":{
-        "start":[100.0, 100.0],
-        "animation": false,
-        "animations":{
-            "r":"player_right.png",
-            "l":"player_left.png"
-        },
-        "image": "player1.png",
-        "box": [30,32],
-        "collision": true,
-        "solid": true,
-        "maxspeed": 180.0,
-        "maxjump": 300.0,
-        "acceleration": 1200
-    },
-    "objects":[
-        {
-            "id":"pl1",
-            "imageat": [0,0,32,32],
-            "collision":true,
-            "solid":true,
-            "box": [32,32],
-            "friction": 200.0
-        },
-        {
-            "id":"pl2",
-            "imageat":[32,0,32,32],
-            "collision":true,
-            "solid":true,
-            "box": [32,32],
-            "friction": 230.0
-        },
-        {
-            "id":"load flag",
-            "imageat":[32,0,32,32],
-            "collision":true,
-            "oncollision": {"loadlevel": "level1.json"},
-            "solid":false,
-            "box": [32,32]
-        }
-    ],
-    "backgrounds":[
-        {
-            "image":"background1.png",
-            "distance": 10,
-            "looping": false,
-            "position": [100,0]
-        }
-    ],
+    "objects": [{
+        "id": "pl1",
+        "colorval": [0, 128, 0]
+    }, {
+        "id": "pl2",
+        "colorval": [128, 0, 0]
+    }, {
+        "id": "load flag",
+        "colorval": [0, 32, 128]
+    }],
     "map": [
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -87,5 +43,4 @@
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ]
-
 }

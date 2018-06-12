@@ -1,0 +1,17 @@
+{
+    "objects":[
+        {
+            "id":"pl1",
+            "colorval":[0,128,0]
+        },
+        {
+            "id":"pl2",
+            "colorval":[128,0,0]
+        },
+        {
+            "id":"load flag",
+            "colorval":[0,32,128]
+        }
+    ],
+    "empty": [0,0,0]
+}
