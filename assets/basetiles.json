@@ -161,14 +161,23 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
 	"sourceSize": {"w":32,"h":32},
 	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "water_1_32x32.png",
+	"frame": {"x":0,"y":288,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32},
+	"pivot": {"x":0.5,"y":0.5}
 }],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "basetiles.png",
 	"format": "RGBA8888",
-	"size": {"w":64,"h":288},
+	"size": {"w":64,"h":320},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:5682806ee52af2097c6dc3575466707a:f87f6cb0bfd39080ab152d8194dbee67:40cb433100619a48e537894bb807adda$"
+	"smartupdate": "$TexturePacker:SmartUpdate:76a792f8869fcc6eab093a61851212c6:bb3bd135f6f3b56780ac22896f9da9bf:40cb433100619a48e537894bb807adda$"
 }
 }

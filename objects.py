@@ -3,9 +3,12 @@ from math import ceil
 
 
 class Sprite():
-    def __init__(self, dct:dict):
+    def __init__(self, dct:dict, assetdir = "", ss = None):
         self.id = dct["id"] if "id" in dct else None #object id
-        self.imageat = dct["imageat"] if "imageat" in dct else None #position of image on sprite sheet
+        if "imageat" in dct:
+            self.image = ss.image_at(dct["imageat"]) #position of image on sprite sheet
+        elif "image" in dct:
+            self.image = pg.image.load(assetdir+dct["image"])
         self.box = dct["box"] if "box" in dct else print("no box defined") #box for physics interactions
         self.collisions = dct["collision"] if "collision" in dct else False #sets wether the objects has interactions
         self.oncollision = dct["oncollision"]  if "oncollision" in dct and dct["oncollision"] != None  else dict()
@@ -53,11 +56,11 @@ class Sprite():
         for instance in self.instances:
             pos = [ instance[0]*self.box[0]-camerapos[0] , 
                     screen.get_height() -(instance[1]*self.box[1]-camerapos[1])]
-            screen.blit(ss.image_at(self.imageat), tuple(map(lambda x, y: x - y/2, pos, self.box)))
+            screen.blit(self.image, tuple(map(lambda x, y: x - y/2, pos, self.box)))
 
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
-        super().__init__(dct)
+        super().__init__(dct, assetdir=assetdir)
         animdct = dct["animation"] if "animation" in dct else False
         if animdct["use"]:
             self.animations = dict()
@@ -105,7 +108,8 @@ class Player(Sprite):
         if keys[pg.K_SPACE]:
             #print("space")
             self.pressed = True
-            self.jumpstrength = min(self.maxjump , self.jumpstrength + 10.0)
+            self.move.append({"jch":1})
+            
         if not keys[pg.K_SPACE] and self.pressed:
             self.pressed = False
             self.move.append({"j":1})
@@ -128,10 +132,11 @@ class Player(Sprite):
             #print("top")
             self.non = False
         elif side == "b":
-            if self.vel[1]<0.0 and colobject.solid: self.vel[1] = 0.0
-            self.move.append({"f":colobject.friction})
-            self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
-            self.jumps = 0
+            if colobject.solid: 
+                if self.vel[1]<0.0 : self.vel[1] = 0.0
+                self.move.append({"f":colobject.friction})
+                self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
+                self.jumps = 0
         
         
     def update(self, dt:float, physics:dict):
@@ -163,6 +168,8 @@ class Player(Sprite):
                 if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-max(1, abs(self.vel[0])/40)*x["f"] * dt))/abs(self.vel[0])
                 else: self.vel[0] = 0.0
                 #self.image = self.animations["s"][0].next()
+            elif "jch" in x:
+                self.jumpstrength = min(self.maxjump , self.jumpstrength + 1000.0*dt)
             elif "j" in x:
                 self.jump()
         #update dynamic animations    

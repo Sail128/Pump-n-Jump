@@ -5,7 +5,7 @@
         "imageat": [0, 0, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [64, 0, 128]
@@ -14,7 +14,7 @@
         "imageat": [32, 0, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [32, 0, 96]
@@ -23,7 +23,7 @@
         "imageat": [0, 32, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 16, 160]
@@ -32,7 +32,7 @@
         "imageat": [32, 32, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 16, 192]
@@ -41,7 +41,7 @@
         "imageat": [0, 64, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 32, 224]
@@ -95,7 +95,7 @@
         "imageat": [0, 160, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": true,
+        "solid": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [255, 192, 255]
@@ -162,5 +162,14 @@
         "box": [32, 32],
         "friction": 300,
         "colorval": [192, 192, 192]
+    },{
+        "id": "water_1_32x32.png",
+        "imageat": [0, 288, 32, 32],
+        "collision": true,
+        "oncollision": null,
+        "solid": true,
+        "box": [32, 32],
+        "friction": 300,
+        "colorval": [0, 0, 192]
     }]
 }

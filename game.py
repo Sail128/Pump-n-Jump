@@ -13,7 +13,7 @@ class Game():
         #self.displayscreen = pg.display.set_mode((0,0),pg.FULLSCREEN|pg.HWSURFACE|pg.DOUBLEBUF)
         #self.screensize = self.displayscreen.get_size()
         self.wndsize = (width, height)
-        self.screen = pg.display.set_mode(self.wndsize, pg.HWSURFACE|pg.DOUBLEBUF)
+        self.screen = pg.display.set_mode(self.wndsize, pg.FULLSCREEN|pg.HWSURFACE|pg.DOUBLEBUF)
         self.objects = []
         self.background = []
         self.camerapos = [0.0,0.0]
@@ -59,7 +59,7 @@ class Game():
 
         self.objects = []
         for x in levelDict["objects"]:
-            self.objects.append(objs.Sprite(x)) 
+            self.objects.append(objs.Sprite(x, ss= self.spriteSheet)) 
 
         self.background = []
         if "backgrounds" in levelDict:
