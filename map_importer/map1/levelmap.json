@@ -1,48 +1,10 @@
 {
-    "sprite sheet": "assets\\basetiles.png",
-    "assetsDir": "assets\\",
-    "physics":{
-        "gravity":600
-    },
-    "player": {
-        "start": [100.0, 100.0],
-        "animation": {
-            "use": true,
-            "animations": {
-                "s": {
-                    "file": "player1.png",
-                    "rect": [0, 0, 32, 32],
-                    "frames": 1,
-                    "loop": true
-                },
-                "r": {
-                    "file":"player_right.png",
-                    "rect": [0, 0, 32, 32],
-                    "frames":25, 
-                    "loop":true
-                },
-                "l": {
-                    "file":"player_left.png",
-                    "rect": [0, 0, 32, 32],
-                    "frames":25, 
-                    "loop":true
-                }
-            }
-        },
-        "image": "player1.png",
-        "box": [30, 32],
-        "collision": true,
-        "solid": true,
-        "maxspeed": 180.0,
-        "maxjump": 600.0,
-        "acceleration": 1200
-    },
     "objects": [{
         "id": "dark_1_32x32.png",
         "imageat": [0, 0, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [64, 0, 128]
@@ -51,7 +13,7 @@
         "imageat": [32, 0, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [32, 0, 96]
@@ -60,7 +22,7 @@
         "imageat": [0, 32, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 16, 160]
@@ -69,7 +31,7 @@
         "imageat": [32, 32, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 16, 192]
@@ -78,7 +40,7 @@
         "imageat": [0, 64, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [96, 32, 224]
@@ -132,7 +94,7 @@
         "imageat": [0, 160, 32, 32],
         "collision": true,
         "oncollision": null,
-        "solid": false,
+        "solid": true,
         "box": [32, 32],
         "friction": 300,
         "colorval": [255, 192, 255]
@@ -218,5 +180,4 @@
         [9, 0, 0, 0, 0, 0, 11, 0, 0, 11, 0, 0, 0, 0, 0, 0, 7, 7, 6, 6, 6, 6, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 7, 7, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8]
     ]
-
 }

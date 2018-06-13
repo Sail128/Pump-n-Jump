@@ -8,7 +8,7 @@ class Sprite():
         self.imageat = dct["imageat"] if "imageat" in dct else None #position of image on sprite sheet
         self.box = dct["box"] if "box" in dct else print("no box defined") #box for physics interactions
         self.collisions = dct["collision"] if "collision" in dct else False #sets wether the objects has interactions
-        self.oncollision = dct["oncollision"]  if "oncollision" in dct else dict()
+        self.oncollision = dct["oncollision"]  if "oncollision" in dct and dct["oncollision"] != None  else dict()
         self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
         self.friction = dct["friction"] if "friction" in dct else 0.0 #friction an object exerts on a player, 
         self.non = 0
@@ -120,15 +120,15 @@ class Player(Sprite):
     def collision(self, side:str, colobject:Sprite, instance:list):
         if side == "l":
             #print("left")
-            if self.vel[0] < 0.0: self.vel[0] = 0.0
+            if self.vel[0] < 0.0 and colobject.solid: self.vel[0] = 0.0
         elif side == "r":
             #print("right")
-            if self.vel[0] > 0.0: self.vel[0] = 0.0
+            if self.vel[0] > 0.0 and colobject.solid: self.vel[0] = 0.0
         elif side == "t":
             #print("top")
             self.non = False
         elif side == "b":
-            if self.vel[1]<0.0 : self.vel[1] = 0.0
+            if self.vel[1]<0.0 and colobject.solid: self.vel[1] = 0.0
             self.move.append({"f":colobject.friction})
             self.pos[1] = instance[1]*32+(colobject.box[1]+self.box[1])/2
             self.jumps = 0
@@ -166,7 +166,7 @@ class Player(Sprite):
             elif "j" in x:
                 self.jump()
         #update dynamic animations    
-        if -0.1 <self.vel[0]< 0.1 and self.jumps == 0:
+        if -0.5 <self.vel[0]< 0.5 and self.jumps == 0:
             self.image = self.animations["s"][0].next()
         
 
