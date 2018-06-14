@@ -56,9 +56,12 @@ class Sprite():
 
     def render(self, screen, ss, camerapos):
         for instance in self.instances:
-            pos = [ instance[0]*self.box[0]-camerapos[0] , 
-                    screen.get_height() -(instance[1]*self.box[1]-camerapos[1])]
+            pos = [ instance[0]*32-camerapos[0] , 
+                    screen.get_height() -(instance[1]*32-camerapos[1])]
             screen.blit(self.image, tuple(map(lambda x, y: x - y/2, pos, self.box)))
+            #pos = [ instance[0]*self.box[0]-camerapos[0] , 
+            #        screen.get_height() -(instance[1]*self.box[1]-camerapos[1])]
+            #screen.blit(self.image, tuple(map(lambda x, y: x - y/2, pos, self.box)))
 
 class Player(Sprite):
     def __init__(self, dct:dict, assetdir:str):
@@ -84,7 +87,7 @@ class Player(Sprite):
         for key, val in dct.items():
             print(key, val)
             self.animations[key] = [
-                SpriteStripAnim(assetdir+val["file"],
+                spriteAnim(assetdir+val["file"],
                     val["rect"],
                     val["frames"],
                     loop = val["loop"] if "loop" in val else True),
@@ -193,68 +196,42 @@ class Player(Sprite):
         screen.blit(self.image, (int(self.pos[0]-self.box[0]/2- camerapos[0]), int(screen.get_height() -(self.pos[1]-camerapos[1])-self.box[1]/2)))
 
 class spritesheet(object):
-    def __init__(self, filename):
-        try:
+    def __init__(self, filename:str):
             self.sheet = pg.image.load(filename).convert_alpha()
-        except pg.error:
-            print ('Unable to load spritesheet image:', filename)
-            raise (SystemExit)
-    # Load a specific image from a specific rectangle
-    def image_at(self, rectangle, colorkey = None):
-        "Loads image from x,y,x+offset,y+offset"
+
+    def image_at(self, rectangle:list):
+        #returns image from rectangle(x, y, x+offset, y+offset)
         rect = pg.Rect(rectangle)
         image = pg.Surface(rect.size).convert_alpha()
-        image.fill((0,0,0,0))
-        image.blit(self.sheet, (0, 0), rect , pg.BLEND_RGBA_ADD)
-        if colorkey is not None:
-            if colorkey is -1:
-                colorkey = image.get_at((0,0))
-            image.set_colorkey(colorkey, pg.RLEACCEL)
-        #print(image.get_at((0,0)))
+        image.fill((0,0,0,0))#fill with alpha so every thing is zero
+        image.blit(self.sheet, (0, 0), rect , pg.BLEND_RGBA_ADD)#add the rectangle from the sheet to the temp image
         return image
-    # Load a whole bunch of images and return them as a list
-    def images_at(self, rects, colorkey = None):
-        "Loads multiple images, supply a list of coordinates" 
-        return [self.image_at(rect, colorkey) for rect in rects]
-    # Load a whole strip of images
-    def load_strip(self, rect, image_count, colorkey = None):
-        "Loads a strip of images and returns them as a list"
-        
-        tups = [(rect[0]+rect[2]*x, rect[1], rect[2], rect[3])
-                for x in range(image_count)]
-        return self.images_at(tups, colorkey)
 
-class SpriteStripAnim(object):
-    """sprite strip animator
-    
-    This class provides an iterator (iter() and next() methods), and a
-    __add__() method for joining strips which comes in handy when a
-    strip wraps to the next row.
-    """
-    def __init__(self, filename, rect, count, colorkey=None, loop=False, frames=1):
-        """construct a SpriteStripAnim
-        
-        filename, rect, count, and colorkey are the same arguments used
-        by spritesheet.load_strip.
-        
-        loop is a boolean that, when True, causes the next() method to
-        loop. If False, the terminal case raises StopIteration.
-        
-        frames is the number of ticks to return the same image before
-        the iterator advances to the next image.
-        """
+    def images_at(self, rects:list):
+        #Loads images from muliplt coördinate sets
+        return [self.image_at(rect) for rect in rects]
+
+    def loadStrip(self, rect:list , count:int):
+        #returns a list of image from a strip in the spritesheet
+        rects = []
+        for x in range(count):
+            rects.append((rect[0] + rect[2] * x, 
+            rect[1], rect[2], rect[3]))
+        return self.images_at(rects)
+
+class spriteAnim(object):
+    def __init__(self, filename, rect, count, colorkey=None, loop=False):
         self.filename = filename
         ss = spritesheet(filename)
-        self.images = ss.load_strip(rect, count, colorkey)
-        self.i = 0
+        self.images = ss.loadStrip(rect, count)
         self.loop = loop
-        self.frames = frames
-        self.f = frames
-    def iter(self):
+        self.i = 0
+
+    def reset(self):
         #resets the loop
         self.i = 0
-        self.f = self.frames
         return self
+
     def next(self):
         if self.i >= len(self.images):
             if not self.loop:
@@ -262,14 +239,8 @@ class SpriteStripAnim(object):
             else:
                 self.i = 0
         image = self.images[self.i]
-        self.f -= 1
-        if self.f == 0:
-            self.i += 1
-            self.f = self.frames
+        self.i += 1
         return image
-    def __add__(self, ss):
-        self.images.extend(ss.images)
-        return self
 
 class Background():
     def __init__(self, dct:dict, assetdir:str):
@@ -284,6 +255,7 @@ class Background():
         pos = [ self.position[0] - camerapos[0]/self.distance, screen.get_height() -(self.position[1]-camerapos[1]/self.distance +self.size[1])]
         screenwidth = screen.get_width()
         if self.looping:
+            # looping is not functional as of jet
             bound = ceil((camerapos[0] + screenwidth - pos[0]) / self.size[0])
             if bound < 0: 
                 bound -= ceil(screenwidth/self.size[0])
@@ -291,7 +263,6 @@ class Background():
                 for i in range(bound, upbound+1):
                     screen.blit(self.image, (pos[0] + self.size[0]*i, pos[1]))
             elif bound > 0:
-                #todo
                 lowbound = bound - ceil( ( pos[0] + bound*self.size[0] - camerapos[0]) / self.size[0])
                 print(lowbound, bound)
                 for i in range(lowbound, bound+1):

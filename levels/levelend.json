@@ -115,6 +115,7 @@
         "collision": true,
         "oncollision": null,
         "solid": true,
+        "passthrough": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [216, 128, 216]
@@ -124,6 +125,7 @@
         "collision": true,
         "oncollision": null,
         "solid": true,
+        "passthrough": false,
         "box": [32, 32],
         "friction": 300,
         "colorval": [216, 0, 216]

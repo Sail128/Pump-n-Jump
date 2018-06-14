@@ -5,7 +5,7 @@ def main():
     game = g.Game()
     game.setLevelDir("levels")
     game.setLevelList(["start.json", "level1.json"])
-    game.start("level1.json")
+    game.start("start.json")
     game.run()
     print("game closed")
 

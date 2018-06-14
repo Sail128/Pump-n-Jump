@@ -48,8 +48,6 @@ class Game():
         levelfile = open(self.levelDir + "/" + self.levelList[level])
         levelDict = json.load(levelfile)
         levelfile.close()
-        print(levelDict["player"])
-        print(type(levelDict["objects"]))
 
         self.assetsDir = levelDict["assetsDir"] if "assetsDir" in levelDict else "assets\\"
         self.spriteSheet = objs.spritesheet(levelDict["sprite sheet"]) if "sprite sheet" in levelDict else None #check for a sprite sheet otherwise none
@@ -70,7 +68,6 @@ class Game():
 
         map = levelDict["map"]
         map = map[::-1]
-        print(map[0])
         for y in range(len(map)):
             for x in range(len(map[y])):
                 if map[y][x] != 0:
