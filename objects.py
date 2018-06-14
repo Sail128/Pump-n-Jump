@@ -120,7 +120,7 @@ class Player(Sprite):
             self.move.append("j")
 
     def jump(self):
-        if self.jumps < 1: 
+        if self.jumps < 2: 
             self.vel[1] += self.jumpstrength
             print(self.jumpstrength)
             self.jumpstrength *= 0.35
@@ -129,10 +129,14 @@ class Player(Sprite):
     def collision(self, side:str, colobject:Sprite, instance:list):
         if side == "l":
             #print("left")
-            if self.vel[0] < 0.0 and colobject.solid: self.vel[0] = 0.0
+            if self.vel[0] < 0.0 and colobject.solid: 
+                self.vel[0] = 0.0
+                self.pos[0] = instance[0]*32+(colobject.box[1] + self.box[0])/2
         elif side == "r":
             #print("right")
-            if self.vel[0] > 0.0 and colobject.solid: self.vel[0] = 0.0
+            if self.vel[0] > 0.0 and colobject.solid: 
+                self.vel[0] = 0.0
+                self.pos[0] = instance[0]*32+(colobject.box[1]-self.box[0])/2
         elif side == "t":
             #print("top")
             if not colobject.passthrough:
@@ -147,15 +151,13 @@ class Player(Sprite):
         
         
     def update(self, dt:float, physics:dict):
-        self.vel[1] -= physics["gravity"]*dt
-        self.pos[0] += self.vel[0]*dt
-        self.pos[1] += self.vel[1]*dt
+        
 
         for x in self.move:
             if x == "r":
                 self.vel[0] = min(self.vel[0] + self.acc*dt, self.maxspeed)
 
-                if self.animations["r"][1] > self.animations["r"][2]:
+                if (self.animations["r"][1] > self.animations["r"][2]) and (-1<self.vel[1]<1):
                     self.image = self.animations["r"][0].next()
                     self.animations["r"][1] == 0.0
                     
@@ -165,7 +167,7 @@ class Player(Sprite):
             elif x == "l":
                 self.vel[0] = max(self.vel[0] - self.acc*dt, -self.maxspeed)
 
-                if self.animations["l"][1] > self.animations["l"][2]:
+                if self.animations["l"][1] > self.animations["l"][2] and -1<self.vel[1]<1:
                     self.image = self.animations["l"][0].next()
                     self.animations["l"][1] == 0.0
                 else: 
@@ -182,14 +184,26 @@ class Player(Sprite):
                      self.jumpstrength = min(self.maxjump , self.jumpstrength + 200.0*dt)
                 else:
                     self.jumpstrength = min(self.maxjump , self.jumpstrength + 400.0*dt)
+
             elif x=="j":
                 self.jump()
+                self.image = self.animations["u"][0].next()
             
             if not "jch" in self.move:
                 self.jumpstrength = max (0, self.jumpstrength - 10*dt)
         #update dynamic animations    
-        if -0.5 <self.vel[0]< 0.5 and self.jumps == 0:
+        if (-0.5 <self.vel[0]< 0.5) and (-0.5<self.vel[1]<0.5):
             self.image = self.animations["s"][0].next()
+
+        if self.vel[1] < -0.5:
+            self.image = self.animations["d"][0].next()
+        
+        #standard equations of motion
+        self.vel[1] -= physics["gravity"]*dt
+        self.pos[0] += self.vel[0]*dt
+        self.pos[1] += self.vel[1]*dt
+
+ 
         
 
     def render(self, screen, camerapos):

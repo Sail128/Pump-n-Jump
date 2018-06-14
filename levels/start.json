@@ -26,6 +26,18 @@
                     "rect": [0, 0, 32, 32],
                     "frames": 25,
                     "loop": true
+                },
+                "u": {
+                    "file": "playeru.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames": 1,
+                    "loop": true
+                },
+                "d": {
+                    "file": "playerd.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames": 1,
+                    "loop": true
                 }
             }
         },

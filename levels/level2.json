@@ -5,7 +5,7 @@
         "gravity": 300
     },
     "player": {
-        "start": [300.0, 100.0],
+        "start": [100.0, 100.0],
         "animation": {
             "use": true,
             "animations": {
@@ -16,16 +16,28 @@
                     "loop": true
                 },
                 "r": {
-                    "file":"player_right.png",
+                    "file": "player_right.png",
                     "rect": [0, 0, 32, 32],
-                    "frames":25, 
-                    "loop":true
+                    "frames": 25,
+                    "loop": true
                 },
                 "l": {
-                    "file":"player_left.png",
+                    "file": "player_left.png",
                     "rect": [0, 0, 32, 32],
-                    "frames":25, 
-                    "loop":true
+                    "frames": 25,
+                    "loop": true
+                },
+                "u": {
+                    "file": "playeru.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames": 1,
+                    "loop": true
+                },
+                "d": {
+                    "file": "playerd.png",
+                    "rect": [0, 0, 32, 32],
+                    "frames": 1,
+                    "loop": true
                 }
             }
         },
@@ -34,7 +46,7 @@
         "collision": true,
         "solid": true,
         "maxspeed": 180.0,
-        "maxjump": 500.0,
+        "maxjump": 300.0,
         "acceleration": 1200
     },
     "objects": [{
