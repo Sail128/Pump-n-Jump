@@ -213,8 +213,9 @@ class spritesheet(object):
     def __init__(self, filename:str):
             self.sheet = pg.image.load(filename).convert_alpha()
 
+    #returns image from rectangle(x, y, x+offset, y+offset)
     def image_at(self, rectangle:list):
-        #returns image from rectangle(x, y, x+offset, y+offset)
+        
         rect = pg.Rect(rectangle)
         image = pg.Surface(rect.size).convert_alpha()
         image.fill((0,0,0,0))#fill with alpha so every thing is zero
@@ -222,11 +223,9 @@ class spritesheet(object):
         return image
 
     def images_at(self, rects:list):
-        #Loads images from muliplt coördinate sets
         return [self.image_at(rect) for rect in rects]
 
     def loadStrip(self, rect:list , count:int):
-        #returns a list of image from a strip in the spritesheet
         rects = []
         for x in range(count):
             rects.append((rect[0] + rect[2] * x, 
@@ -248,9 +247,7 @@ class spriteAnim(object):
 
     def next(self):
         if self.i >= len(self.images):
-            if not self.loop:
-                raise StopIteration
-            else:
+            if self.loop:
                 self.i = 0
         image = self.images[self.i]
         self.i += 1
