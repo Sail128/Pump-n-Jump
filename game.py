@@ -59,7 +59,7 @@ class Game():
 
         self.objects = []
         for x in levelDict["objects"]:
-            self.objects.append(objs.Sprite(x, ss= self.spriteSheet)) 
+            self.objects.append(objs.Sprite(x, assetdir = self.assetsDir ,ss= self.spriteSheet)) 
 
         self.background = []
         if "backgrounds" in levelDict:
@@ -79,8 +79,8 @@ class Game():
 
 
 
-    def start(self):
-        self.loadLevel(self.levelList.index("start.json"))
+    def start(self, startlevel):
+        self.loadLevel(self.levelList.index(startlevel))
 
     def close(self):
         pg.quit()
@@ -129,6 +129,7 @@ class Game():
 
             self.player.render(self.screen, self.camerapos)
 
+            pg.draw.rect(self.screen,(96,96, 255), (16,16,16+300*(self.player.jumpstrength/self.player.maxjump), 21))
             #self.displayscreen.blit(pg.transform.scale(self.screen, self.screensize), (0,0))
 
             pg.display.update()

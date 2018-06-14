@@ -24,12 +24,13 @@ def import_map(imgpath, objlistpath, outputpath):
             row.append(keylist.index(levelmap[x,y][:3]))
         maparray.append(row)
 
+    objdict["map"] = maparray
     outfiledata = { "objects": objlist,
                     "map": maparray
     }
 
     outfile = open(outputpath,"w")
-    outfile.write(json.dumps(outfiledata))
+    outfile.write(json.dumps(objdict))
     outfile.close()
 
 ##tool for converting an image with a list to a relevant map file

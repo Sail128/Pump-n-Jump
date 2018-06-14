@@ -8,11 +8,13 @@ class Sprite():
         if "imageat" in dct:
             self.image = ss.image_at(dct["imageat"]) #position of image on sprite sheet
         elif "image" in dct:
+            print(assetdir+dct["image"])
             self.image = pg.image.load(assetdir+dct["image"])
         self.box = dct["box"] if "box" in dct else print("no box defined") #box for physics interactions
         self.collisions = dct["collision"] if "collision" in dct else False #sets wether the objects has interactions
         self.oncollision = dct["oncollision"]  if "oncollision" in dct and dct["oncollision"] != None  else dict()
         self.solid = dct["solid"] if "solid" in dct else False #whether object is solid
+        self.passthrough = dct["passthrough"] if "passthrough" in dct else True
         self.friction = dct["friction"] if "friction" in dct else 0.0 #friction an object exerts on a player, 
         self.non = 0
 
@@ -97,10 +99,10 @@ class Player(Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_d]:
             #print("right")
-            self.move.append({"r": 1})
+            self.move.append("r")
         if keys[pg.K_a]:
             #print("left")
-            self.move.append({"l":1})
+            self.move.append("l")
         #if keys[pg.K_w]:
             #print("up")
         #if keys[pg.K_s]:
@@ -108,17 +110,17 @@ class Player(Sprite):
         if keys[pg.K_SPACE]:
             #print("space")
             self.pressed = True
-            self.move.append({"jch":1})
+            self.move.append("jch")
             
         if not keys[pg.K_SPACE] and self.pressed:
             self.pressed = False
-            self.move.append({"j":1})
+            self.move.append("j")
 
     def jump(self):
         if self.jumps < 1: 
             self.vel[1] += self.jumpstrength
             print(self.jumpstrength)
-            self.jumpstrength *= 0.4
+            self.jumpstrength *= 0.35
             self.jumps +=1
 
     def collision(self, side:str, colobject:Sprite, instance:list):
@@ -130,7 +132,9 @@ class Player(Sprite):
             if self.vel[0] > 0.0 and colobject.solid: self.vel[0] = 0.0
         elif side == "t":
             #print("top")
-            self.non = False
+            if not colobject.passthrough:
+                if self.vel[1]>0.0 : self.vel[1] = 0.0
+                self.pos[1] = instance[1]*32-(colobject.box[1]+self.box[1])/2
         elif side == "b":
             if colobject.solid: 
                 if self.vel[1]<0.0 : self.vel[1] = 0.0
@@ -145,7 +149,7 @@ class Player(Sprite):
         self.pos[1] += self.vel[1]*dt
 
         for x in self.move:
-            if "r" in x:
+            if x == "r":
                 self.vel[0] = min(self.vel[0] + self.acc*dt, self.maxspeed)
 
                 if self.animations["r"][1] > self.animations["r"][2]:
@@ -155,7 +159,7 @@ class Player(Sprite):
                 else: 
                     self.animations["r"][1] += dt
 
-            elif "l" in x:
+            elif x == "l":
                 self.vel[0] = max(self.vel[0] - self.acc*dt, -self.maxspeed)
 
                 if self.animations["l"][1] > self.animations["l"][2]:
@@ -165,13 +169,21 @@ class Player(Sprite):
                     self.animations["l"][1] += dt
 
             elif "f" in x:
-                if self.vel[0] >= 0.1 or self.vel[0] <= -0.1: self.vel[0] *= (abs(abs(self.vel[0])-max(1, abs(self.vel[0])/40)*x["f"] * dt))/abs(self.vel[0])
-                else: self.vel[0] = 0.0
+                if self.vel[0] >= 0.2 or self.vel[0] <= -0.2: 
+                    self.vel[0] *= (abs(abs(self.vel[0])-max(1, abs(self.vel[0])/40)*x["f"] * dt))/abs(self.vel[0])
+                else: 
+                    self.vel[0] = 0.0
                 #self.image = self.animations["s"][0].next()
-            elif "jch" in x:
-                self.jumpstrength = min(self.maxjump , self.jumpstrength + 1000.0*dt)
-            elif "j" in x:
+            elif x=="jch":
+                if self.vel[1] > 0.1:
+                     self.jumpstrength = min(self.maxjump , self.jumpstrength + 200.0*dt)
+                else:
+                    self.jumpstrength = min(self.maxjump , self.jumpstrength + 400.0*dt)
+            elif x=="j":
                 self.jump()
+            
+            if not "jch" in self.move:
+                self.jumpstrength = max (0, self.jumpstrength - 10*dt)
         #update dynamic animations    
         if -0.5 <self.vel[0]< 0.5 and self.jumps == 0:
             self.image = self.animations["s"][0].next()
