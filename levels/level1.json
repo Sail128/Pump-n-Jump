@@ -5,7 +5,7 @@
         "gravity":300
     },
     "player": {
-        "start": [500.0, 100.0],
+        "start": [300.0, 100.0],
         "animation": {
             "use": true,
             "animations": {
