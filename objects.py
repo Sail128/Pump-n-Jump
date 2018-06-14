@@ -136,7 +136,7 @@ class Player(Sprite):
             #print("right")
             if self.vel[0] > 0.0 and colobject.solid: 
                 self.vel[0] = 0.0
-                self.pos[0] = instance[0]*32+(colobject.box[1]-self.box[0])/2
+                self.pos[0] = instance[0]*32-(colobject.box[1]+self.box[0])/2
         elif side == "t":
             #print("top")
             if not colobject.passthrough:
